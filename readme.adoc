@@ -8,7 +8,7 @@ image:images/02.aws.iam.role.trust.policy.png[]
 
 
 
-link:./script/app.roles.assignments.sh[assign managed identity to application]
+link:./scripts/app.roles.assignments.sh[assign managed identity to application]
 
 
 link:./terraform/README.md[terraform]
