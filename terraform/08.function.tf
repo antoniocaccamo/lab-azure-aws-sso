@@ -22,10 +22,11 @@ resource "azurerm_linux_function_app" "fnc-lab-aws-sso" {
   }
 
   app_settings = {
-#   "ENABLE_ORYX_BUILD"              = "true"
-#   "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
-    "FUNCTIONS_WORKER_RUNTIME"       = "python"
+    "ENABLE_ORYX_BUILD"              = true
+    "BUILD_FLAGS"                     = "UseExpressBuild"
+    "SCM_DO_BUILD_DURING_DEPLOYMENT" = true
 #   "AzureWebJobsFeatureFlags"       = "EnableWorkerIndexing"
+    "FUNCTIONS_WORKER_RUNTIME"       = "python"
     "AZURE_CLIENT_ID"                         = azurerm_user_assigned_identity.mi-lab-aws-sso.client_id
     "AUDIENCE"                                = local.audience
     "AWS_ROLE_ARN"                            = local.aws_role_name
@@ -42,6 +43,7 @@ resource "azurerm_linux_function_app" "fnc-lab-aws-sso" {
       allowed_origins = ["https://portal.azure.com"]
     }
     ftps_state = "FtpsOnly"
+    
   }
   tags                      = local.common_tags
 
@@ -52,50 +54,50 @@ resource "azurerm_linux_function_app" "fnc-lab-aws-sso" {
 
 
 
-resource "azurerm_linux_function_app" "flex-fnc-lab-aws-sso" {
+# resource "azurerm_linux_function_app" "flex-fnc-lab-aws-sso" {
 
-  name                = "fnc-flex-lab-aws-sso"
-  resource_group_name = azurerm_resource_group.rg-lab-aws-sso.name
-  location            = azurerm_resource_group.rg-lab-aws-sso.location
-  service_plan_id     = azurerm_service_plan.splan-lab-aws-sso.id
+#   name                = "fnc-flex-lab-aws-sso"
+#   resource_group_name = azurerm_resource_group.rg-lab-aws-sso.name
+#   location            = azurerm_resource_group.rg-lab-aws-sso.location
+#   service_plan_id     = azurerm_service_plan.splan-lab-aws-sso.id
 
 
-  storage_account_name       = azurerm_storage_account.st-flex-lab-aws-sso.name
-  storage_account_access_key = azurerm_storage_account.st-flex-lab-aws-sso.primary_access_key
+#   storage_account_name       = azurerm_storage_account.st-flex-lab-aws-sso.name
+#   storage_account_access_key = azurerm_storage_account.st-flex-lab-aws-sso.primary_access_key
 
-  identity {
-    type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.mi-lab-aws-sso.id]
-  }
+#   identity {
+#     type         = "UserAssigned"
+#     identity_ids = [azurerm_user_assigned_identity.mi-lab-aws-sso.id]
+#   }
 
-  app_settings = {
-#   "ENABLE_ORYX_BUILD"              = "true"
-#   "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
-    "FUNCTIONS_WORKER_RUNTIME"       = "python"
-#   "AzureWebJobsFeatureFlags"       = "EnableWorkerIndexing"
-    "AZURE_CLIENT_ID"                         = azurerm_user_assigned_identity.mi-lab-aws-sso.client_id
-    "AUDIENCE"                                = local.audience
-    "AWS_ROLE_ARN"                            = local.aws_role_name
-    "AWS_S3_BUCKET"                           = local.aws_s3_bucket
-    "USER_MANAGED_IDENTITY_CLIENT_ID"         = azurerm_user_assigned_identity.mi-lab-aws-sso.client_id
-  }
+#   app_settings = {
+# #   "ENABLE_ORYX_BUILD"              = "true"
+# #   "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
+#     "FUNCTIONS_WORKER_RUNTIME"       = "python"
+# #   "AzureWebJobsFeatureFlags"       = "EnableWorkerIndexing"
+#     "AZURE_CLIENT_ID"                         = azurerm_user_assigned_identity.mi-lab-aws-sso.client_id
+#     "AUDIENCE"                                = local.audience
+#     "AWS_ROLE_ARN"                            = local.aws_role_name
+#     "AWS_S3_BUCKET"                           = local.aws_s3_bucket
+#     "USER_MANAGED_IDENTITY_CLIENT_ID"         = azurerm_user_assigned_identity.mi-lab-aws-sso.client_id
+#   }
 
-  site_config {
-    application_insights_key = azurerm_application_insights.ai-lab-aws-sso.instrumentation_key
-    application_stack {
-      python_version = "3.11"
-    }
-    cors {
-      allowed_origins = ["https://portal.azure.com"]
-    }
-    ftps_state = "FtpsOnly"
-  }
-  tags                      = local.common_tags
+#   site_config {
+#     application_insights_key = azurerm_application_insights.ai-lab-aws-sso.instrumentation_key
+#     application_stack {
+#       python_version = "3.11"
+#     }
+#     cors {
+#       allowed_origins = ["https://portal.azure.com"]
+#     }
+#     ftps_state = "FtpsOnly"
+#   }
+#   tags                      = local.common_tags
 
-  https_only                  = true
-  functions_extension_version = "~4"
+#   https_only                  = true
+#   functions_extension_version = "~4"
 
-}
+# }
 
 
 

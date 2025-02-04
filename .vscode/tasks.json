@@ -21,7 +21,7 @@
 			"isBackground": true,
 			"dependsOn": "pip install (functions)",
 			"options": {
-				"cwd": "${workspaceFolder}/python"
+				"cwd": "${workspaceFolder}/fnc-lab-aws-sso"
 			}
 		},
 		{
