@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './fnc-lab-aws-sso' # set this to the path to your web app project, defaults to the repository root
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
   PYTHON_VERSION: '3.11' # set this to the python version to use (supports 3.6, 3.7, 3.8)
 
 jobs:
@@ -35,16 +35,12 @@ jobs:
           source venv/bin/activate
 
       - name: Install dependencies
-        run: |
-           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-           pip install -r requirements.txt
-           popd
+        run: pip install -r requirements.txt
 
       # Optional: Add step to run tests here
 
       - name: Zip artifact for deployment
-        run: |
-          zip release.zip './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'/* -r
+        run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -73,9 +69,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_9F2801822ED844CE9A51A4A0CDDC0E0E }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_22D037914688411DA79C6C0C2A7A9175 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_9FB0D6234AF54065813E9F4E59A43B13 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_EB184482A9DB4D4E9692984460F41F97 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D8E2B6CD5E6440F4AB51D774796A7097 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_7EE803CEA55747BEA8049DD29F94CE65 }}
 
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
