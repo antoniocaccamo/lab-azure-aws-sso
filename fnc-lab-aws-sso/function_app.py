@@ -6,8 +6,8 @@ import msal
 import os
 import boto3
 
-mi_client_id=os.getenv('USER_MANAGED_IDENTITY_CLIENT_ID') # "da348ffe-d5e8-4f4e-8f19-412f9adb33eb" 
-audience=os.getenv('AUDIENCE')                            # "api://7b917162-75b1-48f3-94c2-7ff5d1f95fe8"
+mi_client_id=os.getenv('USER_MANAGED_IDENTITY_CLIENT_ID') 
+audience=os.getenv('AUDIENCE')                           
 aws_role_arn=os.getenv('AWS_ROLE_ARN')
 aws_s3_bucket=os.getenv('AWS_S3_BUCKET')
 aws_role_session_name="azure-aws"
@@ -15,29 +15,8 @@ aws_role_session_name="azure-aws"
 app = func.FunctionApp()
 
 
-@app.route(route="http_trigger", auth_level=func.AuthLevel.FUNCTION)
-def http_trigger(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
-
-    name = req.params.get('name')
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            name = req_body.get('name')
-
-    if name:
-        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
-    else:
-        return func.HttpResponse(
-             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-             status_code=200
-        )
-
 @app.timer_trigger(
-        schedule="0 * 1/5 * * *", 
+        schedule="0 */5 * * * *", 
         arg_name="myTimer", 
         run_on_startup=False,
         se_monitor=False
@@ -61,9 +40,10 @@ def timer_trigger(myTimer: func.TimerRequest) -> None:
         
         s3client = S3Client(assumed_role.session)
         s3client.listOfBucktes()
-        blobs = s3client.getObjectAllOfBucket(aws_s3_bucket)
-        for b in blobs:
-            logging.info(f" blob: [{b}]")
+        keys = s3client.getObjectAllOfBucket(aws_s3_bucket)
+        for key in keys:
+            logging.info(f"getting object: bucket [{aws_s3_bucket}] key: [{key}]")
+            s3client.get_object(aws_s3_bucket, key)
 
         logging.info('Python timer trigger function executed.')
 
@@ -124,10 +104,22 @@ class S3Client:
             if "directory"  not in obj.content_type:
                 blobs.append(obj.key)
         return blobs
+    
+    def get_object(self, bucket_name:str, key: str) :
+        res=self._client.get_object(Bucket=bucket_name, Key=key)
+        try:
+            response_code = res.get('ResponseMetadata', {}).get('HTTPStatusCode', None)
+            if response_code == 200:
+                body = res['Body']
+                data = body.read()
+                logging.info('File {} downloaded'.format(key))
+                return data
+            else:
+                logging.error('Error while getting object {}. HTTP Response Code - {}'.format(key, response_code))
+        except Exception as err:
+            logging.error('Error while getting object {} - {}'.format(key, err))
+
+        pass
 
 
 
-
-@app.event_grid_trigger(arg_name="azeventgrid")
-def EventGridTrigger(azeventgrid: func.EventGridEvent):
-    logging.info('Python EventGrid trigger processed an event')
