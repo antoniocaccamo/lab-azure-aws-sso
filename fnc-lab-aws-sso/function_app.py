@@ -112,7 +112,7 @@ class S3Client:
             if response_code == 200:
                 body = res['Body']
                 data = body.read()
-                logging.info('File {} downloaded'.format(key))
+                logging.info(f'File {bucket_name}/{key} downloaded: {data}')
                 return data
             else:
                 logging.error('Error while getting object {}. HTTP Response Code - {}'.format(key, response_code))
