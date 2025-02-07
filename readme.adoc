@@ -1,0 +1,56 @@
+= lab-azure-aws-sso
+:sectlinks:
+:sectanchors:
+:sectids:
+:sectnums: 
+:toc: auto
+
+[no]
+== Introduction
+This solution try to address how to access an AWS S3 bucket, with SSE-KMS encryption, from an Azure function.
+
+.Azure cloud resources access AWS resources with temporary security credentials
+image::./images/fnc-lab-aws-sso.png[fnc-lab-aws-sso]
+
+This project provides:
+
+1. the terraform scripts to build basic Azure infrastructure
+
+2. the bash script to link:./scripts/app.roles.assignments.sh[assign managed identity to application]
+
+3. the link:./fnc-lab-aws-sso/function_app.py[Azure function] that, after assume role with web identity, access to the encrypted S3 and read blobs
+
+4. link:./.github/workflows/main_fnc-lab-aws-sso.yml[GitHub action] to build and deploy the Azure function (with Github federation too :smiley:)
+
+## Azure
+
+.Enterprice App with Managed Identity assignment
+image::images/azure/01.ea.mi.assignment.png[]
+
+.Azure function
+image::images/azure/02.az.fnc.execution.png[][]
+
+## AWS
+
+.S3 bucket
+image::images/aws/03.s3.kms.png[]
+
+### OIDC Federation
+
+.AWS IAM identity Provider
+image::./images/aws/01.aws.iam.identity.provider.png[]
+
+.AWS IAM Role trust policy
+image::images/aws/02.aws.iam.role.trust.policy.png[]
+
+
+
+
+link:./script/app.roles.assignments.sh[assign managed identity to application]
+
+
+link:./terraform/README.md[terraform]
+
+
+== Reference
+* https://aws.amazon.com/it/blogs/security/how-to-access-aws-resources-from-microsoft-entra-id-tenants-using-aws-security-token-service/[How to access AWS resources from Microsoft Entra ID tenants using AWS Security Token Service]
